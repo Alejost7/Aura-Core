@@ -11,12 +11,34 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
+    # 1. Checkout del código
+    - uses: actions/checkout@v3
+
+    # 2. Instalar Rust
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    # 3. Instalar dependencias de sistema necesarias para Tauri
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y \
+        libgtk-3-dev \
+        libwebkit2gtk-4.0-dev \
+        libappindicator3-dev \
+        librsvg2-dev \
+        patchelf
+
+    # 4. Compilar el backend Rust desde src-tauri
+    - name: Build Tauri backend
+      working-directory: src-tauri
+      run: cargo build --release
+
+    # 5. (Opcional) Ejecutar tests
     - name: Run tests
-      run: cargo test --verbose
+      working-directory: src-tauri
+      run: cargo test
