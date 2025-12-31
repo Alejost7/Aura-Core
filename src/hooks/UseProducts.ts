@@ -3,17 +3,21 @@ import { useState } from 'react';
 
 export interface Producto {
     id: number;
+    codigo_barras: string;
     nombre: string;
-    precio: number;
+    marca: string;
+    precio_costo: number;
+    precio_venta: number;
     stock: number;
 }
 
+
 export const useProducts = () => {
     const [log, setLog] = useState("");
-    const [productos, setProductos] = useState<any[]>([]);
+    const [productos, setProductos] = useState<Producto[]>([]);
 
     async function cargarStock() {
-        const data = await invoke<any[]>("obtener_productos");
+        const data = await invoke<Producto[]>("obtener_productos");
         setProductos(data);
         setLog(`Se cargaron ${data.length} productos.`);
     };
