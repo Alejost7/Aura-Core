@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Estilo para navegadores basados en WebKit (Tauri usa WebView2/WebKit) */
+::-webkit-scrollbar {
+  width: 10px;               /* Ancho del scroll vertical */
+  height: 8px;              /* Alto del scroll horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;  /* Fondo de la barra (transparente como Spotify) */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;      /* Color del "agarre" (slate-700) */
+  border-radius: 10px;      /* Bordes redondeados */
+  border: 2px solid #0f172a; /* Espacio alrededor para que se vea flotando */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;      /* Color al pasar el mouse (slate-600) */
+}
