@@ -1,4 +1,4 @@
-Aura-Core | Desktop Management System
+# Aura-Core | Desktop Management System
 Live Beauty es una solución de escritorio de alto rendimiento diseñada para la gestión masiva de inventarios cosméticos. Construida con un enfoque en la velocidad y la seguridad de datos.
 
 🛠️ Tech Stack
