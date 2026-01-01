@@ -24,6 +24,9 @@ jobs:
         toolchain: stable
         override: true
 
+    - name: Install Tauri dependencies
+      run: curl -sL https://tauri.app/sh/install.sh | bash
+
     - name: Enable universe 
       run: | 
         sudo apt-get update
