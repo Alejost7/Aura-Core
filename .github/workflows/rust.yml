@@ -1,0 +1,52 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    # 1. Checkout del código
+    - uses: actions/checkout@v3
+
+    # 2. Instalar Rust
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Enable universe 
+      run: | 
+        sudo apt-get update
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository universe
+        sudo add-apt-repository multiverse
+        sudo apt-get update
+        
+    # 3. Instalar dependencias de sistema necesarias para Tauri
+    - name: Install system dependencies
+      run: sudo apt-get update && sudo apt-get install -y \
+        libgtk-3-dev \
+        libwebkit2gtk-4.0-dev \
+        libayatana-appindicator3-dev \
+        librsvg2-dev \
+        patchelf
+
+    # 4. Compilar el backend Rust desde src-tauri
+    - name: Build Tauri backend
+      working-directory: src-tauri
+      run: cargo build --release
+
+    # 5. (Opcional) Ejecutar tests
+    - name: Run tests
+      working-directory: src-tauri
+      run: cargo test
