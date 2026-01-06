@@ -1,6 +1,7 @@
 use crate::db::open_conn;
 use crate::state::DbState;
 use crate::models::producto::Producto;
+use crate::models::producto::NuevoProducto;
 use tauri::State;
 
 #[tauri::command]
@@ -45,4 +46,36 @@ pub fn obtener_productos(db: State<DbState>) -> Result<Vec<Producto>, String> {
         .map_err(|e| e.to_string())?;
 
     Ok(productos)
+}
+
+#[tauri::command]
+pub fn registrar_producto(db: State<DbState>, data: NuevoProducto) -> Result<(), String> {
+    let mut conn = open_conn(&db.path)?;
+
+    let tx = conn.transaction().map_err(|e| e.to_string())?;
+    if data.stock_inicial < 0 {
+        tx.execute(
+            "INSERT INTO productos (
+                codigo_barras,
+                nombre,
+                id_marca,
+                id_categoria,
+                precio_costo,
+                precio_venta,
+                stock
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                data.codigo_barras,
+                data.nombre,
+                data.id_marca,
+                data.id_categoria,
+                data.precio_costo,
+                data.precio_venta,
+                data.stock_inicial
+            )
+        )
+        .map_err(|e| e.to_string())?;
+    }
+    tx.commit().map_err(|e| e.to_string())?;
+    Ok(())
 }

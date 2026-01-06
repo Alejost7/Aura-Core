@@ -8,6 +8,7 @@ use crate::state::DbState;
 use crate::db::init::init_db;
 use crate::commands::sistema::obtener_info_sistema;
 use crate::commands::productos::{contar_productos, obtener_productos};
+use crate::commands::productos::registrar_producto;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -17,12 +18,23 @@ pub fn run() {
             let sqlite_path = init_db(app)
                 .expect("Error al iniciar DB");
             app.manage(DbState { path: sqlite_path });
+
+            // Obtener el handle 
+            let app_handle = app.handle();
+            // Mostrar la ventana solo caundo todo esté listo
+            let window = app_handle 
+                .get_webview_window("main")
+                .expect("No se encontró la ventana principal");
+
+            window.show().expect("No se puedo mostrar la ventana");
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             obtener_info_sistema,
             contar_productos,
-            obtener_productos
+            obtener_productos,
+            registrar_producto
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

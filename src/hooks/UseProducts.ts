@@ -11,6 +11,16 @@ export interface Producto {
     stock: number;
 }
 
+export interface NuevoProducto {
+    codigo_barras: string;
+    nombre: string;
+    id_marca?: number | null;
+    id_categoria?: number | null;
+    precio_costo: number;
+    precio_venta: number;
+    stock_inicial: number;
+}
+
 
 export const useProducts = () => {
     const [log, setLog] = useState("");
@@ -32,10 +42,22 @@ export const useProducts = () => {
         }
     };
 
+    async function agregarProducto(data : NuevoProducto) {
+        try {
+            await invoke("registrar_producto", { data });
+            setLog("Producto registrado exitosamente");
+            await cargarStock();
+        } catch (error) {
+            console.error("Error al registrar el producto:", error);
+            setLog("Error al registrar el producto");
+        }
+    }
+
     return {
         productos,
         log,
         cargarStock,
         llamarARust,
+        agregarProducto
     };
 }
