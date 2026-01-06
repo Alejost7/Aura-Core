@@ -1,18 +1,79 @@
 # Aura-Core | Desktop Management System
-Live Beauty es una solución de escritorio de alto rendimiento diseñada para la gestión masiva de inventarios cosméticos. Construida con un enfoque en la velocidad y la seguridad de datos.
+Aura-Core es el sistema de escritorio para la tienda Live Beauty. Su foco es la gestion de inventario local con alta velocidad, baja latencia y datos persistentes en el equipo.
 
-### 🛠️ Tech Stack
-- Frontend: React + TypeScript + Tailwind CSS (Atomic Design).
+## Estado actual (MVP)
+- Inicio de sesion local con credenciales fijas (admin / 1234) para pruebas.
+- Vista de inventario con tabla y estado del sistema.
+- Base de datos SQLite creada automaticamente en el primer inicio.
+- Backend en Rust con comandos Tauri para consultar y registrar productos.
+- UI preparada para agregar, editar y eliminar, pero aun sin flujo conectado.
 
-- Runtime: Tauri (Seguridad nativa y bajo consumo de recursos).
+## Tech Stack
+- Frontend: React + TypeScript + Tailwind CSS.
+- Desktop runtime: Tauri 2.
+- Backend: Rust.
+- Database: SQLite (modo WAL).
 
-- Backend: Rust (Manejo eficiente de memoria para escaneo en tiempo real).
+## Arquitectura
+- React renderiza la interfaz y usa `@tauri-apps/api` para invocar comandos Rust.
+- Rust inicializa la base de datos y expone operaciones de inventario via Tauri commands.
+- SQLite guarda inventario y movimientos en almacenamiento local del sistema.
 
-- Database: SQLite con persistencia local atómica.
+## Estructura del proyecto
+- `src/`: UI (paginas, componentes, hooks).
+- `src/pages/`: vistas principales (Login, Home).
+- `src/components/`: layout, UI y modulos de inventario.
+- `src/hooks/UseProducts.ts`: puente con comandos Tauri.
+- `src-tauri/`: backend Rust, base de datos y comandos.
 
-### 💎 Key Features
-- Bulk Scanning: Procesamiento de códigos de barras a alta velocidad con validación instantánea.
+## Comandos Tauri disponibles
+- `obtener_info_sistema`: retorna un mensaje de conexion con el nucleo.
+- `contar_productos`: devuelve el total de productos activos.
+- `obtener_productos`: lista productos activos con su marca.
+- `registrar_producto`: registra un producto nuevo.
 
-- Hive Analytics: Panel de control con métricas de ganancias y valor de inventario.
+### Payload de `registrar_producto`
+Campos requeridos en `NuevoProducto`:
+- `codigo_barras`, `nombre`
+- `precio_costo`, `precio_venta`, `stock_inicial`
+- `id_marca`, `id_categoria` (opcionales)
 
-- Zero-Config DB: Autocreación de base de datos en el sistema del cliente.
+## Modelo de datos (SQLite)
+- `usuarios`: usuarios del sistema y roles.
+- `categorias`: categorias de productos.
+- `marcas`: marcas disponibles.
+- `productos`: catalogo e inventario.
+- `ventas` y `venta_detalles`: registro de ventas.
+- `movimientos`: entradas, salidas y ajustes de stock.
+
+## Desarrollo local
+Requisitos:
+- Node.js 18+
+- Rust toolchain
+- Tauri CLI (v2)
+
+Pasos:
+```bash
+npm install
+npm run dev
+```
+
+Para ejecutar como app de escritorio:
+```bash
+npm run tauri dev
+```
+
+Build:
+```bash
+npm run build
+npm run tauri build
+```
+
+## Notas operativas
+- La base de datos se crea en el directorio de datos de la app con el nombre `aura_core.db`.
+- La ventana usa una title bar personalizada controlada desde Tauri.
+
+## Pendientes cercanos
+- Conectar UI de alta/baja/edicion de productos.
+- Reemplazar login local por autenticacion real.
+- Completar modulos de ventas y movimientos.
