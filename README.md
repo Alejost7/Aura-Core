@@ -2,7 +2,7 @@
 Aura-Core es el sistema de escritorio para la tienda Live Beauty. Su foco es la gestion de inventario local con alta velocidad, baja latencia y datos persistentes en el equipo.
 
 ## Estado actual (MVP)
-- Inicio de sesion local con credenciales fijas (admin / 1234) para pruebas.
+- Inicio de sesion real (admin / admin123) con hash de password en SQLite.
 - Vista de inventario con tabla y estado del sistema.
 - Base de datos SQLite creada automaticamente en el primer inicio.
 - Backend en Rust con comandos Tauri para consultar y registrar productos.
@@ -31,6 +31,12 @@ Aura-Core es el sistema de escritorio para la tienda Live Beauty. Su foco es la 
 - `contar_productos`: devuelve el total de productos activos.
 - `obtener_productos`: lista productos activos con su marca.
 - `registrar_producto`: registra un producto nuevo.
+- `actualizar_producto`: actualiza datos de un producto.
+- `eliminar_producto`: baja logica de un producto.
+- `registrar_entrada`: entrada de inventario (aumenta stock).
+- `registrar_salida`: salida de inventario (disminuye stock).
+- `ajustar_stock`: ajuste directo de stock (con movimiento).
+- `login_usuario`: autentica usuario y retorna datos basicos.
 
 ### Payload de `registrar_producto`
 Campos requeridos en `NuevoProducto`:
@@ -74,6 +80,5 @@ npm run tauri build
 - La ventana usa una title bar personalizada controlada desde Tauri.
 
 ## Pendientes cercanos
-- Conectar UI de alta/baja/edicion de productos.
-- Reemplazar login local por autenticacion real.
-- Completar modulos de ventas y movimientos.
+- UI para usuarios y roles.
+- Completar modulos de ventas y movimientos (facturacion).

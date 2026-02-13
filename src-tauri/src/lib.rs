@@ -2,13 +2,28 @@ mod db;
 mod state;
 mod commands;
 mod models;
+mod auth;
+mod authz;
 
 use tauri::Manager;
 use crate::state::DbState;
 use crate::db::init::init_db;
+use crate::authz::AuthState;
 use crate::commands::sistema::obtener_info_sistema;
-use crate::commands::productos::{contar_productos, obtener_productos};
-use crate::commands::productos::registrar_producto;
+use crate::commands::productos::{contar_productos, obtener_productos, registrar_producto, actualizar_producto, eliminar_producto};
+use crate::commands::inventario::{registrar_entrada, registrar_salida, ajustar_stock};
+use crate::commands::users::{
+    contar_usuarios,
+    desactivar_usuario,
+    login_usuario,
+    logout_usuario,
+    obtener_usuarios,
+    registrar_usuario,
+    reset_password_usuario,
+};
+use crate::commands::ventas::registrar_venta;
+use crate::commands::marcas::{obtener_marcas, registrar_marca};
+use crate::commands::reportes::{obtener_resumen_admin, obtener_resumen_admin_rango};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -18,13 +33,13 @@ pub fn run() {
             let sqlite_path = init_db(app)
                 .expect("Error al iniciar DB");
             app.manage(DbState { path: sqlite_path });
+            app.manage(AuthState::default());
 
-            // Obtener el handle 
+            // Mostrar la ventana solo cuando todo este listo.
             let app_handle = app.handle();
-            // Mostrar la ventana solo caundo todo esté listo
             let window = app_handle 
                 .get_webview_window("main")
-                .expect("No se encontró la ventana principal");
+                .expect("No se encontro la ventana principal");
 
             window.show().expect("No se puedo mostrar la ventana");
 
@@ -34,7 +49,24 @@ pub fn run() {
             obtener_info_sistema,
             contar_productos,
             obtener_productos,
-            registrar_producto
+            registrar_producto,
+            actualizar_producto,
+            eliminar_producto,
+            registrar_entrada,
+            registrar_salida,
+            ajustar_stock,
+            obtener_usuarios,
+            contar_usuarios,
+            registrar_usuario,
+            login_usuario,
+            logout_usuario,
+            desactivar_usuario,
+            reset_password_usuario,
+            registrar_venta,
+            obtener_marcas,
+            registrar_marca,
+            obtener_resumen_admin,
+            obtener_resumen_admin_rango
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

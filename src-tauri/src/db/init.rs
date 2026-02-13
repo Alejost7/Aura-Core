@@ -1,6 +1,7 @@
 use rusqlite::Connection;
 use std::{fs, path::PathBuf};
 use tauri::Manager;
+use crate::auth::hash_password;
 
 pub fn init_db(app: &tauri::App) -> Result<PathBuf, String> {
     let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
@@ -10,8 +11,9 @@ pub fn init_db(app: &tauri::App) -> Result<PathBuf, String> {
     let conn = Connection::open(&db_path).map_err(|e| e.to_string())?;
 
     create_tables(&conn)?;
+    ensure_admin_user(&conn)?;
 
-    println!("✅ Base de datos inicializada en: {:?}", db_path);
+    println!("[OK] Base de datos inicializada en: {:?}", db_path);
     Ok(db_path)
 }
 
@@ -28,6 +30,7 @@ fn create_tables(conn: &Connection) -> Result<(), String> {
         username TEXT UNIQUE NOT NULL,
         rol TEXT NOT NULL,
         password_hash TEXT NOT NULL,
+        activo INTEGER NOT NULL DEFAULT 1,
         last_login DATETIME
         );
 
@@ -94,5 +97,43 @@ fn create_tables(conn: &Connection) -> Result<(), String> {
         "#,
     )
     .map_err(|e| e.to_string())?;
+    ensure_usuarios_columns(conn)?;
+    Ok(())
+}
+
+fn ensure_usuarios_columns(conn: &Connection) -> Result<(), String> {
+    let mut stmt = conn
+        .prepare("PRAGMA table_info(usuarios)")
+        .map_err(|e| e.to_string())?;
+
+    let has_activo = stmt
+        .query_map([], |row| row.get::<_, String>(1))
+        .map_err(|e| e.to_string())?
+        .filter_map(Result::ok)
+        .any(|name| name == "activo");
+
+    if !has_activo {
+        conn.execute("ALTER TABLE usuarios ADD COLUMN activo INTEGER NOT NULL DEFAULT 1", [])
+            .map_err(|e| e.to_string())?;
+    }
+
+    Ok(())
+}
+
+fn ensure_admin_user(conn: &Connection) -> Result<(), String> {
+    let count: i64 = conn
+        .query_row("SELECT COUNT(*) FROM usuarios", [], |r| r.get(0))
+        .map_err(|e| e.to_string())?;
+
+    if count == 0 {
+        // Usuario inicial para poder entrar al sistema por primera vez.
+        let hash = hash_password("admin123")?;
+        conn.execute(
+            "INSERT INTO usuarios (username, rol, password_hash) VALUES (?, ?, ?)",
+            ("admin", "admin", hash),
+        )
+        .map_err(|e| e.to_string())?;
+    }
+
     Ok(())
 }

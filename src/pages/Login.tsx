@@ -1,30 +1,33 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/ui/Button';
+import { invoke } from "@tauri-apps/api/core";
+import type { UserPublic } from '../types/auth';
 
 interface LoginProps {
-    onLogin: (user: string) => void;
-    }
+    onLogin: (user: UserPublic) => void;
+}
 
-    export default function Login({ onLogin }: LoginProps) {
+export default function Login({ onLogin }: LoginProps) {
     const [usuario, setUsuario] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Aquí podrías validar contra Rust más adelante
-        if (usuario === 'admin' && password === '1234') {
-        onLogin(usuario);  // Notifica al componente padre
-        navigate('/home'); // Redirige a la página de inicio
-        } else {
-        alert('Credenciales incorrectas (Prueba admin/1234)');
+        try {
+            // El login se valida en Rust y devuelve el usuario sin el hash.
+            const user = await invoke<UserPublic>("login_usuario", { username: usuario, password });
+            onLogin(user);  // Notifica al componente padre
+            navigate('/home'); // Redirige a la pagina de inicio
+        } catch (err) {
+            alert('Credenciales incorrectas (Prueba admin/admin123)');
         }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0f172a] p-4 relative overflow-hidden">
-        {/* Círculos decorativos de fondo */}
+        {/* Circulos decorativos de fondo */}
         <div className="absolute w-64 h-64 bg-rose-500/20 rounded-full blur-3xl -top-10 -left-10"></div>
         <div className="absolute w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -bottom-10 -right-10"></div>
 
@@ -33,7 +36,7 @@ interface LoginProps {
             <h1 className="text-4xl font-black bg-gradient-to-r from-rose-400 to-purple-500 bg-clip-text text-transparent">
                 Live Beauty
             </h1>
-            <p className="text-slate-400 mt-2 font-medium">Panel de Administración</p>
+            <p className="text-slate-400 mt-2 font-medium">Panel de Administracion</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -49,13 +52,13 @@ interface LoginProps {
             </div>
 
             <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Contraseña</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Contrasena</label>
                 <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 text-white outline-none focus:border-rose-500/50 transition-all"
-                placeholder="••••••••"
+                placeholder="********"
                 />
             </div>
 
@@ -70,7 +73,7 @@ interface LoginProps {
             </form>
 
             <p className="text-center text-slate-500 text-xs mt-8 italic">
-            Software de Control Nativo · v1.0
+            Software de Control Nativo - v1.0
             </p>
         </div>
         </div>

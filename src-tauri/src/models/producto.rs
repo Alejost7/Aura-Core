@@ -6,6 +6,7 @@ pub struct Producto {
     pub codigo_barras: String,
     pub nombre: String,
     pub marca: String,
+    pub id_marca: Option<i64>,
     pub precio_costo: f64,
     pub precio_venta: f64,
     pub stock: i32,
@@ -20,4 +21,14 @@ pub struct NuevoProducto {
     pub precio_costo: f64,
     pub precio_venta: f64,
     pub stock_inicial: i64
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ProductoEditable {
+    pub codigo_barras: String,
+    pub nombre: String,
+    pub id_marca: Option<i64>,
+    pub id_categoria: Option<i64>,
+    pub precio_costo: f64,
+    pub precio_venta: f64,
 }

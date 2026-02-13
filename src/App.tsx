@@ -3,9 +3,11 @@ import { useState } from 'react';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import TitleBar from './components/layout/TitleBar'; // Importa tu nueva barra
+import type { UserPublic } from './types/auth';
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<UserPublic | null>(null);
+  const isLoggedIn = Boolean(user);
 
   return (
     <HashRouter>
@@ -20,13 +22,13 @@ export default function App() {
             <Route 
               path="/"
               element={
-                isLoggedIn ? <Navigate to="/home"/> : <Login onLogin={() => setIsLoggedIn(true)} />
+                isLoggedIn ? <Navigate to="/home"/> : <Login onLogin={(u) => setUser(u)} />
               }
             />
             {/* Ruta de Home (Protegida) */}
             <Route 
               path="/home" 
-              element={isLoggedIn ? <Home onLogOut={() => setIsLoggedIn(false)} /> : <Navigate to="/" />} 
+              element={isLoggedIn && user ? <Home user={user} onLogOut={() => setUser(null)} /> : <Navigate to="/" />} 
             />
           </Routes>
         </main>

@@ -3,7 +3,6 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 const appWindow = getCurrentWindow();
 
 export default function TitleBar() {
-    
     // Funciones seguras
     const handleMinimize = () => appWindow.minimize();
     const handleMaximize = () => appWindow.toggleMaximize();
@@ -17,7 +16,7 @@ export default function TitleBar() {
             <div className="flex items-center gap-2 pointer-events-none">
                 <div className="w-2 h-2 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]"></div>
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
-                    Live Beauty · Management System
+                    Live Beauty - Management System
                 </span>
             </div>
 
@@ -34,14 +33,14 @@ export default function TitleBar() {
                     onClick={handleMaximize}
                     className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800 text-slate-400 transition-colors"
                 >
-                    <span className="text-xs">☐</span>
+                    <span className="text-xs">[ ]</span>
                 </button>
 
                 <button 
                     onClick={handleClose}
                     className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-rose-500/20 hover:text-rose-500 text-slate-400 transition-colors"
                 >
-                    ✕
+                    X
                 </button>
             </div>
         </div>
