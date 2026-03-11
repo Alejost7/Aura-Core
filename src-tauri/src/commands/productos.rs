@@ -61,7 +61,9 @@ pub fn obtener_productos(db: State<DbState>, auth: State<AuthState>) -> Result<V
         .prepare(
             "SELECT id, codigo_barras, nombre, 
                     COALESCE((SELECT nombre FROM marcas WHERE marcas.id = productos.id_marca), ''),
+                    COALESCE((SELECT nombre FROM categorias WHERE categorias.id = productos.id_categoria), ''),
                     id_marca,
+                    id_categoria,
                     precio_costo, precio_venta, stock
             FROM productos
             WHERE activo = 1"
@@ -75,10 +77,12 @@ pub fn obtener_productos(db: State<DbState>, auth: State<AuthState>) -> Result<V
                 codigo_barras: row.get(1)?,
                 nombre: row.get(2)?,
                 marca: row.get(3)?,
-                id_marca: row.get(4)?,
-                precio_costo: row.get(5)?,
-                precio_venta: row.get(6)?,
-                stock: row.get(7)?,
+                categoria: row.get(4)?,
+                id_marca: row.get(5)?,
+                id_categoria: row.get(6)?,
+                precio_costo: row.get(7)?,
+                precio_venta: row.get(8)?,
+                stock: row.get(9)?,
             })
         })
         .map_err(|e| e.to_string())?

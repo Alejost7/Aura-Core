@@ -21,9 +21,9 @@ export default function TablaProductos({
     onAjuste
 }: TablaProductosProps) {
     return (
-    <div className="mt-10 bg-slate-800/30 rounded-xl border border-slate-700 overflow-hidden">
+    <div className="beauty-glass mt-6 overflow-hidden rounded-xl">
         <table className="w-full text-left">
-            <thead className="bg-slate-700/50 text-slate-400 text-xs uppercase">
+            <thead className="bg-rose-950/30 text-xs uppercase text-rose-100/75">
             <tr>
                 <th className="px-6 py-3">Producto</th>
                 <th className="px-6 py-3">Precio venta</th>
@@ -31,13 +31,13 @@ export default function TablaProductos({
                 {canManage && <th className="px-6 py-3">Acciones</th>}
             </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700">
+            <tbody className="divide-y divide-rose-100/10">
             {productos.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-700/30 transition-colors">
-                <td className="px-6 py-4 font-medium">{p.nombre}</td>
-                <td className="px-6 py-4 text-cyan-400">${p.precio_venta.toFixed(2)}</td>
+                <tr key={p.id} className="transition-colors hover:bg-rose-950/25">
+                <td className="px-6 py-4 font-medium text-rose-50">{p.nombre}</td>
+                <td className="px-6 py-4 text-amber-200">${p.precio_venta.toFixed(2)}</td>
                 <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded text-xs ${p.stock < 10 ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+                    <span className={`rounded px-2 py-1 text-xs ${p.stock < 10 ? 'bg-red-500/20 text-red-200' : 'bg-emerald-500/20 text-emerald-200'}`}>
                     {p.stock} unidades
                     </span>
                 </td>

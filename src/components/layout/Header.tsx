@@ -6,12 +6,11 @@ interface HeaderProps {
 
 export default function Header({ onLogOut }: HeaderProps) {
     return (
-        <header className="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
-            {/* Header compacto para el sidebar */}
+        <header className="beauty-glass rounded-xl p-4">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-xs uppercase text-slate-500">Estado</p>
-                    <p className="text-sm font-bold text-emerald-400">OK CONECTADO</p>
+                    <p className="text-xs uppercase text-rose-100/60">Estado</p>
+                    <p className="text-sm font-bold text-white-300">OK CONECTADO</p>
                 </div>
                 <LogOutButton onLogOut={onLogOut} />
             </div>

@@ -13,6 +13,7 @@ use crate::commands::sistema::obtener_info_sistema;
 use crate::commands::productos::{contar_productos, obtener_productos, registrar_producto, actualizar_producto, eliminar_producto};
 use crate::commands::inventario::{registrar_entrada, registrar_salida, ajustar_stock};
 use crate::commands::users::{
+    activar_usuario,
     contar_usuarios,
     desactivar_usuario,
     login_usuario,
@@ -21,8 +22,9 @@ use crate::commands::users::{
     registrar_usuario,
     reset_password_usuario,
 };
-use crate::commands::ventas::registrar_venta;
+use crate::commands::ventas::{listar_ventas, obtener_detalle_venta, registrar_venta};
 use crate::commands::marcas::{obtener_marcas, registrar_marca};
+use crate::commands::categorias::{obtener_categorias, registrar_categoria};
 use crate::commands::reportes::{obtener_resumen_admin, obtener_resumen_admin_rango};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -61,10 +63,15 @@ pub fn run() {
             login_usuario,
             logout_usuario,
             desactivar_usuario,
+            activar_usuario,
             reset_password_usuario,
             registrar_venta,
+            listar_ventas,
+            obtener_detalle_venta,
             obtener_marcas,
             registrar_marca,
+            obtener_categorias,
+            registrar_categoria,
             obtener_resumen_admin,
             obtener_resumen_admin_rango
         ])

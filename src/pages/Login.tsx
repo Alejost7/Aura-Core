@@ -1,81 +1,74 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/ui/Button';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/ui/Button";
 import { invoke } from "@tauri-apps/api/core";
-import type { UserPublic } from '../types/auth';
+import type { UserPublic } from "../types/auth";
 
 interface LoginProps {
     onLogin: (user: UserPublic) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
-    const [usuario, setUsuario] = useState('');
-    const [password, setPassword] = useState('');
+    const [usuario, setUsuario] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            // El login se valida en Rust y devuelve el usuario sin el hash.
             const user = await invoke<UserPublic>("login_usuario", { username: usuario, password });
-            onLogin(user);  // Notifica al componente padre
-            navigate('/home'); // Redirige a la pagina de inicio
-        } catch (err) {
-            alert('Credenciales incorrectas (Prueba admin/admin123)');
+            onLogin(user);
+            navigate("/home");
+        } catch {
+            alert("Credenciales incorrectas (Prueba admin/admin123)");
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0f172a] p-4 relative overflow-hidden">
-        {/* Circulos decorativos de fondo */}
-        <div className="absolute w-64 h-64 bg-rose-500/20 rounded-full blur-3xl -top-10 -left-10"></div>
-        <div className="absolute w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -bottom-10 -right-10"></div>
+        <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-rose-500/30 p-4">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(244,63,94,0.18),transparent_35%),radial-gradient(circle_at_85%_80%,rgba(251,191,36,0.2),transparent_40%)]" />
+            <div className="absolute -left-24 -top-24 h-80 w-80 rounded-full bg-rose-300/35 blur-3xl" />
+            <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-amber-300/30 blur-3xl" />
+            <div className="absolute left-1/2 top-1/3 h-56 w-56 -translate-x-1/2 rounded-full bg-pink-200/30 blur-3xl" />
 
-        <div className="relative w-full max-w-md bg-slate-800/50 backdrop-blur-xl border border-slate-700 p-8 rounded-3xl shadow-2xl">
-            <div className="text-center mb-10">
-            <h1 className="text-4xl font-black bg-gradient-to-r from-rose-400 to-purple-500 bg-clip-text text-transparent">
-                Live Beauty
-            </h1>
-            <p className="text-slate-400 mt-2 font-medium">Panel de Administracion</p>
+            <div className="beauty-glass relative w-full max-w-md rounded-3xl p-8">
+                <div className="mb-10 text-center">
+                    <h1 className="bg-gradient-to-r from-rose-200 via-rose-100 to-amber-200 bg-clip-text text-4xl font-black text-transparent">
+                        Live Beauty
+                    </h1>
+                    <p className="mt-2 font-medium text-rose-100/70">Panel de Administracion</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                        <label className="mb-2 ml-1 block text-xs font-bold uppercase text-rose-100/70">Usuario</label>
+                        <input
+                            type="text"
+                            value={usuario}
+                            onChange={(e) => setUsuario(e.target.value)}
+                            className="beauty-input w-full rounded-2xl p-4"
+                            placeholder="Tu usuario"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="mb-2 ml-1 block text-xs font-bold uppercase text-rose-100/70">Contrasena</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="beauty-input w-full rounded-2xl p-4"
+                            placeholder="********"
+                        />
+                    </div>
+
+                    <Button type="submit" variant="into" size="full" className="hover:scale-[1.02]">
+                        Entrar al sistema
+                    </Button>
+                </form>
+
+                <p className="mt-8 text-center text-xs italic text-rose-100/65">Software de control nativo - v1.0</p>
             </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Usuario</label>
-                <input
-                type="text"
-                value={usuario}
-                onChange={(e) => setUsuario(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 text-white outline-none focus:border-rose-500/50 transition-all"
-                placeholder="Tu usuario"
-                />
-            </div>
-
-            <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase ml-1 mb-2">Contrasena</label>
-                <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 text-white outline-none focus:border-rose-500/50 transition-all"
-                placeholder="********"
-                />
-            </div>
-
-            <Button
-                type="submit"
-                variant="into"
-                size="full"
-                className="transform hover:scale-[1.02]"
-            >
-                Entrar al Sistema
-            </Button>
-            </form>
-
-            <p className="text-center text-slate-500 text-xs mt-8 italic">
-            Software de Control Nativo - v1.0
-            </p>
-        </div>
         </div>
     );
 }

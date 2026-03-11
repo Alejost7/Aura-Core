@@ -6,7 +6,9 @@ export interface Producto {
     codigo_barras: string;
     nombre: string;
     marca: string;
+    categoria: string;
     id_marca?: number | null;
+    id_categoria?: number | null;
     precio_costo: number;
     precio_venta: number;
     stock: number;
@@ -51,6 +53,11 @@ export interface AjusteInventario {
 }
 
 export interface Marca {
+    id: number;
+    nombre: string;
+}
+
+export interface Categoria {
     id: number;
     nombre: string;
 }
@@ -104,6 +111,33 @@ export interface VentaInput {
     detalles: VentaDetalleInput[];
 }
 
+export interface VentaHistorialItem {
+    id: number;
+    fecha: string;
+    total: number;
+    metodo_pago: "efectivo" | "tarjeta" | "transferencia";
+    notas?: string | null;
+    vendedor?: string | null;
+}
+
+export interface VentaDetalleItem {
+    producto_id: number;
+    nombre: string;
+    cantidad: number;
+    precio_unitario: number;
+    subtotal: number;
+}
+
+export interface VentaDetalleResponse {
+    venta_id: number;
+    fecha: string;
+    total: number;
+    metodo_pago: "efectivo" | "tarjeta" | "transferencia";
+    notas?: string | null;
+    vendedor?: string | null;
+    items: VentaDetalleItem[];
+}
+
 
 export const useProducts = () => {
     const [log, setLog] = useState("");
@@ -111,9 +145,11 @@ export const useProducts = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [productos, setProductos] = useState<Producto[]>([]);
     const [marcas, setMarcas] = useState<Marca[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [resumenAdmin, setResumenAdmin] = useState<ResumenAdmin | null>(null);
     const [resumenAdminRango, setResumenAdminRango] = useState<ResumenAdminRango | null>(null);
+    const [ventasHistorial, setVentasHistorial] = useState<VentaHistorialItem[]>([]);
 
     async function cargarStock() {
         setIsLoading(true);
@@ -142,6 +178,20 @@ export const useProducts = () => {
         }
     }
 
+    async function cargarCategorias() {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const data = await invoke<Categoria[]>("obtener_categorias");
+            setCategorias(data);
+        } catch (e) {
+            setError("Error al cargar categorias");
+            throw e;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     async function agregarProducto(data : NuevoProducto) {
         setIsLoading(true);
         setError(null);
@@ -150,6 +200,7 @@ export const useProducts = () => {
             setLog("Producto registrado exitosamente");
             await cargarStock();
             await cargarMarcas();
+            await cargarCategorias();
         } catch (error) {
             console.error("Error al registrar el producto:", error);
             setLog("Error al registrar el producto");
@@ -279,6 +330,23 @@ export const useProducts = () => {
         }
     }
 
+    async function registrarCategoria(nombre: string) {
+        setIsLoading(true);
+        setError(null);
+        try {
+            await invoke("registrar_categoria", { nombre });
+            setLog("Categoria registrada");
+            await cargarCategorias();
+        } catch (error) {
+            console.error("Error al registrar categoria:", error);
+            setLog("Error al registrar categoria");
+            setError("Error al registrar categoria");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     async function cargarUsuarios() {
         setIsLoading(true);
         setError(null);
@@ -333,6 +401,23 @@ export const useProducts = () => {
         }
     }
 
+    async function activarUsuario(user_id: number) {
+        setIsLoading(true);
+        setError(null);
+        try {
+            await invoke("activar_usuario", { userId: user_id });
+            setLog("Usuario activado");
+            await cargarUsuarios();
+        } catch (error) {
+            console.error("Error al activar usuario:", error);
+            setLog("Error al activar usuario");
+            setError("Error al activar usuario");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     async function resetPasswordUsuario(user_id: number, new_password: string) {
         setIsLoading(true);
         setError(null);
@@ -381,17 +466,51 @@ export const useProducts = () => {
         }
     }
 
+    async function cargarHistorialVentas(desde?: string, hasta?: string, limit = 100) {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const data = await invoke<VentaHistorialItem[]>("listar_ventas", { desde, hasta, limit });
+            setVentasHistorial(data);
+        } catch (error) {
+            console.error("Error al cargar historial de ventas:", error);
+            setLog("Error al cargar historial de ventas");
+            setError("Error al cargar historial de ventas");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    async function obtenerDetalleVenta(venta_id: number) {
+        setIsLoading(true);
+        setError(null);
+        try {
+            return await invoke<VentaDetalleResponse>("obtener_detalle_venta", { ventaId: venta_id });
+        } catch (error) {
+            console.error("Error al obtener detalle de venta:", error);
+            setLog("Error al obtener detalle de venta");
+            setError("Error al obtener detalle de venta");
+            throw error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return {
         productos,
         marcas,
+        categorias,
         usuarios,
         resumenAdmin,
         resumenAdminRango,
+        ventasHistorial,
         log,
         error,
         isLoading,
         cargarStock,
         cargarMarcas,
+        cargarCategorias,
         agregarProducto,
         actualizarProducto,
         eliminarProducto,
@@ -400,11 +519,15 @@ export const useProducts = () => {
         ajustarStock,
         registrarVenta,
         registrarMarca,
+        registrarCategoria,
         cargarUsuarios,
         cargarResumenAdmin,
         cargarResumenAdminRango,
+        cargarHistorialVentas,
+        obtenerDetalleVenta,
         registrarUsuario,
         desactivarUsuario,
+        activarUsuario,
         resetPasswordUsuario
     };
 }

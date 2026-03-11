@@ -191,6 +191,28 @@ pub fn desactivar_usuario(
 }
 
 #[tauri::command]
+pub fn activar_usuario(
+    db: State<DbState>,
+    auth: State<AuthState>,
+    user_id: i64,
+) -> Result<(), String> {
+    let _ = require_admin(&auth)?;
+    let conn = open_conn(&db.path)?;
+
+    let exists: Option<i64> = conn
+        .query_row("SELECT id FROM usuarios WHERE id = ?", [user_id], |r| r.get(0))
+        .optional()
+        .map_err(|e| e.to_string())?;
+    if exists.is_none() {
+        return Err("Usuario no encontrado".to_string());
+    }
+
+    conn.execute("UPDATE usuarios SET activo = 1 WHERE id = ?", [user_id])
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
 pub fn reset_password_usuario(
     db: State<DbState>,
     auth: State<AuthState>,

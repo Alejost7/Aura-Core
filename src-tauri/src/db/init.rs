@@ -98,6 +98,7 @@ fn create_tables(conn: &Connection) -> Result<(), String> {
     )
     .map_err(|e| e.to_string())?;
     ensure_usuarios_columns(conn)?;
+    ensure_ventas_columns(conn)?;
     Ok(())
 }
 
@@ -116,6 +117,31 @@ fn ensure_usuarios_columns(conn: &Connection) -> Result<(), String> {
         conn.execute("ALTER TABLE usuarios ADD COLUMN activo INTEGER NOT NULL DEFAULT 1", [])
             .map_err(|e| e.to_string())?;
     }
+
+    Ok(())
+}
+
+fn ensure_ventas_columns(conn: &Connection) -> Result<(), String> {
+    let mut stmt = conn
+        .prepare("PRAGMA table_info(ventas)")
+        .map_err(|e| e.to_string())?;
+
+    let has_usuario_id = stmt
+        .query_map([], |row| row.get::<_, String>(1))
+        .map_err(|e| e.to_string())?
+        .filter_map(Result::ok)
+        .any(|name| name == "usuario_id");
+
+    if !has_usuario_id {
+        conn.execute("ALTER TABLE ventas ADD COLUMN usuario_id INTEGER", [])
+            .map_err(|e| e.to_string())?;
+    }
+
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_ventas_usuario_id ON ventas(usuario_id)",
+        [],
+    )
+    .map_err(|e| e.to_string())?;
 
     Ok(())
 }

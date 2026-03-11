@@ -1,5 +1,60 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: light;
+  --beauty-bg: #fff7fb;
+  --beauty-bg-soft: #ffeef6;
+  --beauty-panel: rgba(185, 8, 141, 0.95);
+  --beauty-border: rgba(255, 228, 239, 0.45);
+  --beauty-text: #fff4f7;
+  --beauty-muted: #ffe9f1;
+  --beauty-accent: #fb7185;
+  --beauty-accent-2: #fbbf24;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Poppins", "DM Sans", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(1100px 700px at 8% -10%, rgba(251, 113, 133, 0.28), transparent 60%),
+    radial-gradient(900px 600px at 100% 105%, rgba(251, 191, 36, 0.24), transparent 55%),
+    linear-gradient(150deg, #fff8fc 0%, #ffeef6 48%, #ffe8f0 100%);
+  color: var(--beauty-text);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.beauty-glass {
+  backdrop-filter: blur(12px);
+  background: var(--beauty-panel);
+  border: 1px solid var(--beauty-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.beauty-input {
+  border: 1px solid var(--beauty-border);
+  background: rgba(255, 246, 251, 0.92);
+  color: #4a1f3a;
+  outline: none;
+}
+
+.beauty-input::placeholder {
+  color: rgba(122, 68, 101, 0.65);
+}
+
+.beauty-input:focus {
+  border-color: rgba(251, 113, 133, 0.55);
+  box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.12);
+}
+
+.beauty-input option {
+  color: #4a1f3a;
+  background: #fff7fb;
+}
+
 /* Estilo para navegadores basados en WebKit (Tauri usa WebView2/WebKit) */
 ::-webkit-scrollbar {
   width: 10px;               /* Ancho del scroll vertical */
@@ -11,11 +66,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;      /* Color del "agarre" (slate-700) */
+  background: #d67fa6;      /* Rosado medio */
   border-radius: 10px;      /* Bordes redondeados */
-  border: 2px solid #0f172a; /* Espacio alrededor para que se vea flotando */
+  border: 2px solid #ffe8f1; /* Espacio alrededor para que se vea flotando */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;      /* Color al pasar el mouse (slate-600) */
+  background: #cf98b3;      /* Color al pasar el mouse */
 }
